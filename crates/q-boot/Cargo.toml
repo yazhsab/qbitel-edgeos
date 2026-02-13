@@ -1,0 +1,37 @@
+[package]
+name = "q-boot"
+version.workspace = true
+edition.workspace = true
+authors.workspace = true
+license.workspace = true
+repository.workspace = true
+description = "Qbitel EdgeOS Secure Bootloader"
+
+[[bin]]
+name = "q-boot"
+path = "src/main.rs"
+
+[lib]
+crate-type = ["rlib"]
+
+[features]
+default = ["stm32h7", "development"]
+stm32h7 = ["q-hal/stm32h7"]
+stm32u5 = ["q-hal/stm32u5"]
+# Signing feature for development tools
+signing = []
+# Key configuration (MUST choose one for secure boot)
+production = []            # Use keys/root_pk.bin (real production key)
+development = []           # Use poison dev key (always fails signature — safe default)
+dev-key-file = []          # Use keys/dev_root_pk.bin (real dev keypair for testing)
+
+[dependencies]
+q-common = { workspace = true }
+q-crypto = { workspace = true }
+q-hal = { workspace = true }
+cortex-m = { workspace = true, optional = true }
+cortex-m-rt = { workspace = true, optional = true }
+
+[build-dependencies]
+
+[dev-dependencies]

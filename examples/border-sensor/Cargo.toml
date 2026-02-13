@@ -1,0 +1,36 @@
+# Qbitel EdgeOS - Border Sensor Example
+# Remote surveillance sensor with mesh networking
+
+[package]
+name = "border-sensor-example"
+version = "0.1.0"
+edition = "2021"
+authors = ["Qbitel Inc."]
+description = "Border surveillance sensor using Qbitel EdgeOS"
+license = "Apache-2.0"
+
+[dependencies]
+q-kernel = { path = "../../crates/q-kernel" }
+q-crypto = { path = "../../crates/q-crypto" }
+q-identity = { path = "../../crates/q-identity" }
+q-mesh = { path = "../../crates/q-mesh" }
+q-attest = { path = "../../crates/q-attest" }
+q-update = { path = "../../crates/q-update" }
+q-hal = { path = "../../crates/q-hal" }
+q-common = { path = "../../crates/q-common" }
+
+heapless = "0.8"
+cortex-m = "0.7"
+cortex-m-rt = "0.7"
+
+[features]
+default = ["stm32h7", "mesh"]
+stm32h7 = ["q-hal/stm32h7"]
+stm32u5 = ["q-hal/stm32u5"]
+riscv = ["q-hal/riscv"]
+mesh = []
+low-power = []
+
+[[bin]]
+name = "border-sensor"
+path = "src/main.rs"

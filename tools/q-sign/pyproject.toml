@@ -1,0 +1,83 @@
+[build-system]
+requires = ["setuptools>=61.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "q-sign"
+version = "0.1.0"
+description = "Qbitel EdgeOS Firmware Signing Tool"
+readme = "README.md"
+license = {text = "Apache-2.0"}
+requires-python = ">=3.10"
+authors = [
+    {name = "Qbitel Inc."}
+]
+keywords = ["signing", "firmware", "quantum-resistant", "pqc"]
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Environment :: Console",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: Apache Software License",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Topic :: Security :: Cryptography",
+    "Topic :: System :: Hardware",
+]
+
+dependencies = [
+    "click>=8.1.0,<9.0.0",
+    "pycryptodome>=3.19.0,<4.0.0",
+    "intelhex>=2.3.0,<3.0.0",
+    "cryptography>=41.0.0,<43.0.0",
+    "pyyaml>=6.0,<7.0",
+    "rich>=13.0.0,<14.0.0",
+    "pydantic>=2.0.0,<3.0.0",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=7.0.0",
+    "pytest-cov>=4.0.0",
+    "mypy>=1.0.0",
+    "ruff>=0.1.0",
+    "black>=23.0.0",
+]
+hsm = [
+    "python-pkcs11>=0.7.0",
+]
+
+[project.scripts]
+q-sign = "q_sign.cli:main"
+
+[project.urls]
+Homepage = "https://github.com/yazhsab/qbitel-edgeos"
+Documentation = "https://github.com/yazhsab/qbitel-edgeos/tree/main/docs"
+Repository = "https://github.com/yazhsab/qbitel-edgeos"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.black]
+line-length = 100
+target-version = ["py310", "py311", "py312"]
+
+[tool.ruff]
+line-length = 100
+target-version = "py310"
+
+[tool.ruff.lint]
+select = ["E", "F", "W", "I", "N", "UP", "S", "B", "A", "C4", "DTZ", "T10", "ISC", "ICN", "PIE", "PT", "Q", "RSE", "RET", "SIM", "TID", "ARG", "ERA", "PL", "TRY", "RUF"]
+ignore = ["S101", "PLR0913", "TRY003"]
+
+[tool.mypy]
+python_version = "3.10"
+strict = true
+warn_return_any = true
+warn_unused_ignores = true
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-v --cov=q_sign --cov-report=term-missing"

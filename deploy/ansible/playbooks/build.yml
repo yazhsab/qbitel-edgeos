@@ -1,0 +1,124 @@
+---
+# Qbitel EdgeOS - Build Playbook
+# Builds firmware for all target platforms
+
+- name: Build Qbitel EdgeOS firmware
+  hosts: build_servers
+  become: false
+  gather_facts: true
+
+  vars:
+    workspace_dir: "/opt/qbitel/workspace"
+    rust_toolchain: "stable"
+    targets:
+      - name: stm32h7
+        triple: thumbv7em-none-eabihf
+        features: "stm32h7"
+      - name: stm32u5
+        triple: thumbv8m.main-none-eabihf
+        features: "stm32u5"
+      - name: riscv
+        triple: riscv32imac-unknown-none-elf
+        features: "riscv"
+
+  tasks:
+    - name: Ensure workspace directory exists
+      ansible.builtin.file:
+        path: "{{ workspace_dir }}"
+        state: directory
+        mode: "0755"
+
+    - name: Clone or update Qbitel EdgeOS repository
+      ansible.builtin.git:
+        repo: "{{ qbitel_repo | default('https://github.com/yazhsab/qbitel-edgeos.git') }}"
+        dest: "{{ workspace_dir }}/qbitel-edgeos"
+        version: "{{ qbitel_branch | default('main') }}"
+        force: true
+
+    - name: Install Rust toolchain
+      ansible.builtin.command:
+        cmd: rustup default {{ rust_toolchain }}
+      changed_when: false
+
+    - name: Install target toolchains
+      ansible.builtin.command:
+        cmd: rustup target add {{ item.triple }}
+      loop: "{{ targets }}"
+      changed_when: false
+
+    - name: Install required Rust components
+      ansible.builtin.command:
+        cmd: rustup component add {{ item }}
+      loop:
+        - rustfmt
+        - clippy
+        - llvm-tools-preview
+      changed_when: false
+
+    - name: Run format check
+      ansible.builtin.command:
+        cmd: cargo fmt --all -- --check
+        chdir: "{{ workspace_dir }}/qbitel-edgeos"
+      register: fmt_result
+      failed_when: fmt_result.rc != 0
+      when: run_checks | default(true)
+
+    - name: Run clippy
+      ansible.builtin.command:
+        cmd: cargo clippy --workspace -- -D warnings
+        chdir: "{{ workspace_dir }}/qbitel-edgeos"
+      register: clippy_result
+      failed_when: clippy_result.rc != 0
+      when: run_checks | default(true)
+
+    - name: Run tests
+      ansible.builtin.command:
+        cmd: cargo test --workspace
+        chdir: "{{ workspace_dir }}/qbitel-edgeos"
+      register: test_result
+      failed_when: test_result.rc != 0
+      when: run_tests | default(true)
+
+    - name: Build firmware for each target
+      ansible.builtin.command:
+        cmd: >
+          cargo build
+          --release
+          --target {{ item.triple }}
+          --features {{ item.features }}
+        chdir: "{{ workspace_dir }}/qbitel-edgeos"
+      loop: "{{ targets }}"
+      register: build_results
+
+    - name: Generate binary files
+      ansible.builtin.command:
+        cmd: >
+          rust-objcopy
+          -O binary
+          target/{{ item.triple }}/release/q-boot
+          target/{{ item.triple }}/release/q-boot.bin
+        chdir: "{{ workspace_dir }}/qbitel-edgeos"
+      loop: "{{ targets }}"
+      when: generate_binaries | default(true)
+
+    - name: Calculate firmware sizes
+      ansible.builtin.command:
+        cmd: rust-size target/{{ item.triple }}/release/q-boot
+        chdir: "{{ workspace_dir }}/qbitel-edgeos"
+      loop: "{{ targets }}"
+      register: size_results
+      changed_when: false
+
+    - name: Display build summary
+      ansible.builtin.debug:
+        msg: |
+          Build completed for {{ item.item.name }}:
+          {{ item.stdout }}
+      loop: "{{ size_results.results }}"
+
+    - name: Archive build artifacts
+      ansible.builtin.archive:
+        path: "{{ workspace_dir }}/qbitel-edgeos/target"
+        dest: "{{ workspace_dir }}/artifacts/qbitel-edgeos-{{ qbitel_version }}-{{ ansible_date_time.iso8601_basic_short }}.tar.gz"
+        format: gz
+      when: archive_artifacts | default(true)

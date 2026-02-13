@@ -1,0 +1,54 @@
+# Qbitel EdgeOS Cross-Compilation Configuration
+
+[build]
+# Default target for development
+target = "thumbv7em-none-eabihf"
+
+[target.thumbv7em-none-eabihf]
+# STM32H7 (Cortex-M7F)
+runner = "probe-run --chip STM32H743ZITx"
+rustflags = [
+    # Linker configuration
+    "-C", "link-arg=-Tlink.x",
+    "-C", "link-arg=--nmagic",
+    # CPU-specific optimizations
+    "-C", "target-cpu=cortex-m7",
+    "-C", "target-feature=+fp-armv8d16",
+    # Security hardening flags
+    "-C", "force-frame-pointers=yes",   # Required for stack unwinding/debugging
+    "-C", "llvm-args=-stack-size-section", # Add stack size info for analysis
+]
+
+[target.thumbv8m.main-none-eabihf]
+# STM32U5 (Cortex-M33) with TrustZone
+runner = "probe-run --chip STM32U585AIIx"
+rustflags = [
+    # Linker configuration
+    "-C", "link-arg=-Tlink.x",
+    "-C", "link-arg=--nmagic",
+    # CPU-specific optimizations
+    "-C", "target-cpu=cortex-m33",
+    "-C", "target-feature=+dsp,+fp-armv8d16sp",
+    # Security hardening flags
+    "-C", "force-frame-pointers=yes",   # Required for stack unwinding/debugging
+    "-C", "llvm-args=-stack-size-section", # Add stack size info for analysis
+]
+
+[target.riscv32imac-unknown-none-elf]
+# RISC-V (SiFive)
+runner = "qemu-system-riscv32 -machine sifive_e -nographic -semihosting-config enable=on,target=native -kernel"
+rustflags = [
+    # Linker configuration
+    "-C", "link-arg=-Tlink.x",
+    # Security hardening flags
+    "-C", "force-frame-pointers=yes",
+]
+
+[env]
+DEFMT_LOG = "trace"
+
+[alias]
+rb = "run --bin"
+rrb = "run --release --bin"
+xt = "test --target x86_64-unknown-linux-gnu"
+xtest = "test --target x86_64-unknown-linux-gnu"

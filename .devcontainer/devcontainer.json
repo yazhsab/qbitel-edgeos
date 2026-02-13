@@ -1,0 +1,48 @@
+{
+  "name": "Qbitel EdgeOS Development",
+  "dockerFile": "../Dockerfile",
+  "workspaceFolder": "/workspace",
+  "workspaceMount": "source=${localWorkspaceFolder},target=/workspace,type=bind",
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "rust-lang.rust-analyzer",
+        "tamasfe.even-better-toml",
+        "serayuzgur.crates",
+        "vadimcn.vscode-lldb",
+        "ms-python.python",
+        "ms-python.mypy-type-checker",
+        "charliermarsh.ruff",
+        "marus25.cortex-debug",
+        "probe-rs.probe-rs-debugger",
+        "ms-vscode.hexeditor",
+        "zxh404.vscode-proto3",
+        "yzhang.markdown-all-in-one"
+      ],
+      "settings": {
+        "rust-analyzer.cargo.allFeatures": true,
+        "rust-analyzer.checkOnSave.allFeatures": true,
+        "rust-analyzer.checkOnSave.command": "clippy",
+        "rust-analyzer.cargo.target": "thumbv7em-none-eabihf",
+        "editor.formatOnSave": true,
+        "[rust]": {
+          "editor.defaultFormatter": "rust-lang.rust-analyzer"
+        },
+        "[python]": {
+          "editor.defaultFormatter": "charliermarsh.ruff"
+        },
+        "python.defaultInterpreterPath": "/opt/venv/bin/python",
+        "python.testing.pytestEnabled": true,
+        "files.watcherExclude": {
+          "**/target/**": true
+        }
+      }
+    }
+  },
+  "mounts": [
+    "source=qbitel-edgeos-cargo-cache,target=/usr/local/cargo/registry,type=volume",
+    "source=qbitel-edgeos-target-cache,target=/workspace/target,type=volume"
+  ],
+  "postCreateCommand": "rustup target add thumbv7em-none-eabihf thumbv8m.main-none-eabihf riscv32imac-unknown-none-elf && pip install pre-commit && pre-commit install",
+  "remoteUser": "root"
+}

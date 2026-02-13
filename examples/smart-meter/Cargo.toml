@@ -1,0 +1,33 @@
+# Qbitel EdgeOS - Smart Meter Example
+# Energy metering device with secure data transmission
+
+[package]
+name = "smart-meter-example"
+version = "0.1.0"
+edition = "2021"
+authors = ["Qbitel Inc."]
+description = "Smart meter application using Qbitel EdgeOS"
+license = "Apache-2.0"
+
+[dependencies]
+q-kernel = { path = "../../crates/q-kernel" }
+q-crypto = { path = "../../crates/q-crypto" }
+q-identity = { path = "../../crates/q-identity" }
+q-mesh = { path = "../../crates/q-mesh" }
+q-attest = { path = "../../crates/q-attest" }
+q-update = { path = "../../crates/q-update" }
+q-hal = { path = "../../crates/q-hal" }
+q-common = { path = "../../crates/q-common" }
+
+heapless = "0.8"
+cortex-m = "0.7"
+cortex-m-rt = "0.7"
+
+[features]
+default = ["stm32h7"]
+stm32h7 = ["q-hal/stm32h7"]
+stm32u5 = ["q-hal/stm32u5"]
+
+[[bin]]
+name = "smart-meter"
+path = "src/main.rs"

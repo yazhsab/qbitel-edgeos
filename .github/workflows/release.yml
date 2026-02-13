@@ -1,0 +1,173 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+env:
+  CARGO_TERM_COLOR: always
+
+jobs:
+  build-firmware:
+    name: Build Firmware
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        target:
+          - thumbv7em-none-eabihf
+          - thumbv8m.main-none-eabihf
+          - riscv32imac-unknown-none-elf
+        include:
+          - target: thumbv7em-none-eabihf
+            features: stm32h7
+            platform: stm32h7
+          - target: thumbv8m.main-none-eabihf
+            features: stm32u5
+            platform: stm32u5
+          - target: riscv32imac-unknown-none-elf
+            features: riscv
+            platform: riscv
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install Rust toolchain
+        uses: dtolnay/rust-action@stable
+
+      - name: Install target
+        run: rustup target add ${{ matrix.target }}
+
+      - name: Install llvm-tools
+        run: rustup component add llvm-tools-preview
+
+      - name: Install cargo-binutils
+        run: cargo install cargo-binutils
+
+      - name: Build bootloader (release)
+        run: |
+          cargo build --package q-boot \
+            --target ${{ matrix.target }} \
+            --features ${{ matrix.features }} \
+            --release
+
+      - name: Build kernel (release)
+        run: |
+          cargo build --package q-kernel \
+            --target ${{ matrix.target }} \
+            --features ${{ matrix.features }} \
+            --release
+
+      - name: Generate binary files
+        run: |
+          mkdir -p artifacts/${{ matrix.platform }}
+
+          # Convert ELF to binary
+          rust-objcopy -O binary \
+            target/${{ matrix.target }}/release/q-boot \
+            artifacts/${{ matrix.platform }}/bootloader.bin
+
+          rust-objcopy -O binary \
+            target/${{ matrix.target }}/release/q-kernel \
+            artifacts/${{ matrix.platform }}/kernel.bin
+
+          # Generate hex files
+          rust-objcopy -O ihex \
+            target/${{ matrix.target }}/release/q-boot \
+            artifacts/${{ matrix.platform }}/bootloader.hex
+
+          rust-objcopy -O ihex \
+            target/${{ matrix.target }}/release/q-kernel \
+            artifacts/${{ matrix.platform }}/kernel.hex
+
+      - name: Generate checksums
+        run: |
+          cd artifacts/${{ matrix.platform }}
+          sha256sum *.bin *.hex > SHA256SUMS
+
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: firmware-${{ matrix.platform }}
+          path: artifacts/${{ matrix.platform }}
+
+  build-tools:
+    name: Build Python Tools
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install build tools
+        run: pip install build
+
+      - name: Build q-provision wheel
+        run: |
+          cd tools/q-provision
+          python -m build
+
+      - name: Build q-sign wheel
+        run: |
+          cd tools/q-sign
+          python -m build
+
+      - name: Upload q-provision wheel
+        uses: actions/upload-artifact@v4
+        with:
+          name: q-provision-wheel
+          path: tools/q-provision/dist/*
+
+      - name: Upload q-sign wheel
+        uses: actions/upload-artifact@v4
+        with:
+          name: q-sign-wheel
+          path: tools/q-sign/dist/*
+
+  create-release:
+    name: Create Release
+    needs: [build-firmware, build-tools]
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Download all artifacts
+        uses: actions/download-artifact@v4
+        with:
+          path: release-artifacts
+
+      - name: Prepare release assets
+        run: |
+          mkdir -p release
+
+          # Create firmware archives
+          for platform in stm32h7 stm32u5 riscv; do
+            if [ -d "release-artifacts/firmware-${platform}" ]; then
+              cd release-artifacts/firmware-${platform}
+              tar -czvf ../../release/qbitel-edgeos-${platform}-${{ github.ref_name }}.tar.gz *
+              cd ../..
+            fi
+          done
+
+          # Copy Python wheels
+          cp release-artifacts/q-provision-wheel/* release/ || true
+          cp release-artifacts/q-sign-wheel/* release/ || true
+
+          # Generate overall checksums
+          cd release
+          sha256sum * > SHA256SUMS
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v1
+        with:
+          files: release/*
+          draft: false
+          prerelease: ${{ contains(github.ref_name, 'alpha') || contains(github.ref_name, 'beta') || contains(github.ref_name, 'rc') }}
+          generate_release_notes: true
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

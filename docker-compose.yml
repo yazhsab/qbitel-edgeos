@@ -1,0 +1,93 @@
+# Qbitel EdgeOS - Docker Compose for development and CI
+# Usage:
+#   docker compose up builder    # Run full build
+#   docker compose run test      # Run tests
+#   docker compose run lint      # Run linters
+#   docker compose run audit     # Run security audit
+
+services:
+  builder:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    volumes:
+      - .:/workspace
+      - cargo-cache:/usr/local/cargo/registry
+      - cargo-git:/usr/local/cargo/git
+      - target-cache:/workspace/target
+    command: make build
+    environment:
+      - CARGO_HOME=/usr/local/cargo
+      - CARGO_TARGET_DIR=/workspace/target
+
+  test:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    volumes:
+      - .:/workspace
+      - cargo-cache:/usr/local/cargo/registry
+      - cargo-git:/usr/local/cargo/git
+      - target-cache:/workspace/target
+    command: make test
+    environment:
+      - CARGO_HOME=/usr/local/cargo
+      - RUST_BACKTRACE=1
+
+  lint:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    volumes:
+      - .:/workspace
+      - cargo-cache:/usr/local/cargo/registry
+      - cargo-git:/usr/local/cargo/git
+      - target-cache:/workspace/target
+    command: >
+      sh -c "cargo fmt --all -- --check &&
+             cargo clippy --workspace --all-features -- -D warnings &&
+             cargo deny check"
+
+  audit:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    volumes:
+      - .:/workspace
+      - cargo-cache:/usr/local/cargo/registry
+      - cargo-git:/usr/local/cargo/git
+    command: >
+      sh -c "cargo audit &&
+             cargo deny check advisories &&
+             cargo geiger --all-features --all-targets"
+
+  coverage:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    volumes:
+      - .:/workspace
+      - cargo-cache:/usr/local/cargo/registry
+      - cargo-git:/usr/local/cargo/git
+      - target-cache:/workspace/target
+    command: >
+      cargo tarpaulin --workspace --out xml --out html
+        --output-dir /workspace/coverage
+        --exclude-files "tests/*" "examples/*" "benches/*"
+    environment:
+      - CARGO_HOME=/usr/local/cargo
+
+  python-test:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    volumes:
+      - .:/workspace
+    command: >
+      sh -c "cd /workspace/tools/q-provision && pip install -e '.[dev]' && pytest tests/ -v --cov &&
+             cd /workspace/tools/q-sign && pip install -e '.[dev]' && pytest tests/ -v --cov"
+
+volumes:
+  cargo-cache:
+  cargo-git:
+  target-cache:

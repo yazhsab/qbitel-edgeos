@@ -1,0 +1,25 @@
+[package]
+name = "q-update"
+version.workspace = true
+edition.workspace = true
+authors.workspace = true
+license.workspace = true
+repository.workspace = true
+description = "Q-Update Fabric - Secure firmware update system for Qbitel EdgeOS"
+
+[lib]
+crate-type = ["rlib"]
+
+[features]
+default = []
+std = []
+ab-partition = []
+
+[dependencies]
+q-common = { workspace = true }
+q-crypto = { workspace = true }
+q-hal = { workspace = true }
+heapless = { workspace = true }
+bitflags = { workspace = true }
+
+[dev-dependencies]

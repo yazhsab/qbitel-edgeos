@@ -1,0 +1,25 @@
+[package]
+name = "q-recover"
+version.workspace = true
+edition.workspace = true
+authors.workspace = true
+license.workspace = true
+repository.workspace = true
+description = "Q-RECOVER Framework - Key rotation and recovery for Qbitel EdgeOS"
+
+[lib]
+crate-type = ["rlib"]
+
+[features]
+default = []
+std = []
+
+[dependencies]
+q-common = { workspace = true }
+q-crypto = { workspace = true }
+q-identity = { workspace = true }
+heapless = { workspace = true }
+zeroize = { workspace = true }
+
+[dev-dependencies]
+q-crypto = { workspace = true, features = ["test-vectors"] }

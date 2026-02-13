@@ -1,0 +1,40 @@
+[package]
+name = "q-hal"
+version.workspace = true
+edition.workspace = true
+authors.workspace = true
+license.workspace = true
+repository.workspace = true
+description = "Hardware Abstraction Layer for Qbitel EdgeOS"
+
+[lib]
+crate-type = ["rlib"]
+
+[features]
+default = ["stm32h7"]
+std = []
+
+# Platform support
+stm32h7 = ["cortex-m", "cortex-m-rt"]
+stm32u5 = ["cortex-m", "cortex-m-rt"]
+riscv = []
+
+# Hardware features
+trustzone = []
+puf = []
+hw-crypto = []
+
+[dependencies]
+q-common = { workspace = true }
+q-crypto = { workspace = true }
+embedded-hal = { workspace = true }
+heapless = { workspace = true }
+cfg-if = { workspace = true }
+bitflags = { workspace = true }
+zeroize = { workspace = true }
+
+# Cortex-M support
+cortex-m = { workspace = true, optional = true }
+cortex-m-rt = { workspace = true, optional = true }
+
+[dev-dependencies]

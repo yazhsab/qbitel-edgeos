@@ -1,0 +1,26 @@
+[package]
+name = "q-common"
+version.workspace = true
+edition.workspace = true
+authors.workspace = true
+license.workspace = true
+repository.workspace = true
+description = "Common types, errors, and utilities for Qbitel EdgeOS"
+
+[lib]
+crate-type = ["rlib"]
+
+[features]
+default = []
+std = []
+defmt = ["dep:defmt"]
+
+[dependencies]
+heapless = { workspace = true }
+zeroize = { workspace = true }
+cfg-if = { workspace = true }
+static_assertions = { workspace = true }
+bitflags = { workspace = true }
+defmt = { version = "0.3", optional = true }
+
+[dev-dependencies]

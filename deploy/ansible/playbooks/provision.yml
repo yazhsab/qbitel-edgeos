@@ -1,0 +1,100 @@
+---
+# Qbitel EdgeOS - Device Provisioning Playbook
+# Provisions new devices with identity and firmware
+
+- name: Provision Qbitel EdgeOS devices
+  hosts: provisioning_stations
+  become: false
+  gather_facts: true
+
+  vars:
+    provisioning_output_dir: "/var/qbitel/provisioning"
+    key_storage_dir: "/var/qbitel/keys"
+    log_dir: "/var/log/qbitel"
+
+  tasks:
+    - name: Ensure provisioning directories exist
+      ansible.builtin.file:
+        path: "{{ item }}"
+        state: directory
+        mode: "0750"
+      loop:
+        - "{{ provisioning_output_dir }}"
+        - "{{ key_storage_dir }}"
+        - "{{ log_dir }}"
+
+    - name: Install q-provision tool
+      ansible.builtin.pip:
+        name: q-provision
+        state: present
+        virtualenv: /opt/qbitel/venv
+        virtualenv_python: python3.10
+
+    - name: Copy provisioning configuration
+      ansible.builtin.template:
+        src: provisioning_config.yaml.j2
+        dest: "{{ provisioning_output_dir }}/config.yaml"
+        mode: "0640"
+
+    - name: Generate manufacturer keys (if not exists)
+      ansible.builtin.command:
+        cmd: >
+          /opt/qbitel/venv/bin/q-provision keygen
+          --algorithm dilithium3
+          --output {{ key_storage_dir }}/manufacturer
+          --key-id {{ manufacturer_id }}
+        creates: "{{ key_storage_dir }}/manufacturer/dilithium3_secret.bin"
+      register: keygen_result
+
+    - name: Provision batch of devices
+      ansible.builtin.command:
+        cmd: >
+          /opt/qbitel/venv/bin/q-provision identity
+          --config {{ provisioning_output_dir }}/config.yaml
+          --manufacturer-id {{ manufacturer_id }}
+          --device-class {{ device_class }}
+          --batch-count {{ batch_size | default(10) }}
+          --output {{ provisioning_output_dir }}/batch_{{ ansible_date_time.iso8601_basic_short }}
+      register: provision_result
+      when: batch_provision | default(false)
+
+    - name: Flash device firmware
+      ansible.builtin.command:
+        cmd: >
+          /opt/qbitel/venv/bin/q-provision flash
+          --target {{ target_platform }}
+          --port {{ device_port | default('/dev/ttyUSB0') }}
+          --identity {{ identity_path }}
+          --firmware {{ firmware_path }}
+          --verify
+      register: flash_result
+      when: flash_device | default(false)
+
+    - name: Verify provisioned device
+      ansible.builtin.command:
+        cmd: >
+          /opt/qbitel/venv/bin/q-provision verify
+          --target {{ target_platform }}
+          --port {{ device_port | default('/dev/ttyUSB0') }}
+          --identity {{ identity_path }}
+      register: verify_result
+      when: verify_device | default(false)
+
+    - name: Log provisioning results
+      ansible.builtin.lineinfile:
+        path: "{{ log_dir }}/provisioning.log"
+        line: "{{ ansible_date_time.iso8601 }} - {{ item.cmd | default('N/A') }} - {{ item.rc | default('N/A') }}"
+        create: true
+        mode: "0640"
+      loop:
+        - "{{ keygen_result }}"
+        - "{{ provision_result }}"
+        - "{{ flash_result }}"
+        - "{{ verify_result }}"
+      when: item.changed | default(false)
+
+  handlers:
+    - name: Restart provisioning service
+      ansible.builtin.systemd:
+        name: qbitel-provision
+        state: restarted

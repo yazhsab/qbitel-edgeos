@@ -1,0 +1,24 @@
+[package]
+name = "q-attest"
+version.workspace = true
+edition.workspace = true
+authors.workspace = true
+license.workspace = true
+repository.workspace = true
+description = "Q-ATTEST - Supply chain and runtime attestation for Qbitel EdgeOS"
+
+[lib]
+crate-type = ["rlib"]
+
+[features]
+default = []
+std = []
+
+[dependencies]
+q-common = { workspace = true }
+q-crypto = { workspace = true }
+q-identity = { workspace = true }
+heapless = { workspace = true }
+
+[dev-dependencies]
+q-crypto = { workspace = true, features = ["test-vectors"] }

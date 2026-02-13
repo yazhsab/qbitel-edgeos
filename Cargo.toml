@@ -1,0 +1,101 @@
+# Qbitel EdgeOS — Quantum-Resistant Operating System for Edge Devices
+# Workspace root configuration
+
+[workspace]
+resolver = "2"
+members = [
+    "crates/q-kernel",
+    "crates/q-crypto",
+    "crates/q-identity",
+    "crates/q-update",
+    "crates/q-recover",
+    "crates/q-mesh",
+    "crates/q-attest",
+    "crates/q-hal",
+    "crates/q-boot",
+    "crates/q-common",
+]
+
+[workspace.package]
+version = "0.1.0"
+edition = "2021"
+authors = ["Qbitel Inc."]
+license = "Apache-2.0"
+repository = "https://github.com/yazhsab/qbitel-edgeos"
+rust-version = "1.82"
+
+[workspace.dependencies]
+# Internal crates
+q-kernel = { path = "crates/q-kernel" }
+q-crypto = { path = "crates/q-crypto" }
+q-identity = { path = "crates/q-identity" }
+q-update = { path = "crates/q-update" }
+q-recover = { path = "crates/q-recover" }
+q-mesh = { path = "crates/q-mesh" }
+q-attest = { path = "crates/q-attest" }
+q-hal = { path = "crates/q-hal" }
+q-boot = { path = "crates/q-boot" }
+q-common = { path = "crates/q-common" }
+
+# External dependencies - Embedded
+cortex-m = "0.7"
+cortex-m-rt = "0.7"
+embedded-hal = "1.0"
+heapless = "0.8"
+
+# External dependencies - Cryptography
+zeroize = { version = "1.7", default-features = false, features = ["derive"] }
+sha3 = { version = "0.10", default-features = false }
+aes-gcm = { version = "0.10", default-features = false, features = ["aes"] }
+chacha20poly1305 = { version = "0.10", default-features = false }
+subtle = { version = "2.5", default-features = false }
+
+# PQC libraries
+fn-dsa = { version = "0.3", default-features = false }
+rand_core = { version = "0.6", default-features = false }
+
+# Utilities
+cfg-if = "1.0"
+static_assertions = "1.1"
+bitflags = "2.4"
+
+# Development dependencies
+rand = { version = "0.8", default-features = false }
+
+[profile.release]
+opt-level = "z"         # Optimize for size
+lto = true              # Link-time optimization
+codegen-units = 1       # Single codegen unit for better optimization
+panic = "abort"         # Abort on panic (no unwinding)
+debug = false           # No debug info in release
+strip = true            # Strip symbols
+overflow-checks = true  # Enable overflow checks even in release (security)
+
+[profile.release.package.q-boot]
+opt-level = "s"         # Bootloader: optimize for size
+codegen-units = 1
+overflow-checks = true  # Bootloader must have overflow protection
+
+[profile.release.package.q-crypto]
+overflow-checks = true  # Crypto operations must have overflow protection
+
+# Production-hardened profile for deployment
+[profile.production]
+inherits = "release"
+opt-level = "z"
+lto = "fat"             # Full LTO for maximum optimization
+codegen-units = 1
+panic = "abort"
+overflow-checks = true  # Runtime integer overflow detection
+debug = false
+strip = true
+debug-assertions = false
+rpath = false           # No runtime path for shared libs
+
+[profile.dev]
+opt-level = 1           # Some optimization for faster dev builds
+debug = true            # Full debug info
+overflow-checks = true  # Enable overflow checks in dev
+
+[profile.dev.package.q-crypto]
+opt-level = 2           # Crypto needs optimization even in dev

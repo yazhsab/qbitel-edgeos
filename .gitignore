@@ -1,0 +1,75 @@
+# Rust
+/target/
+# Note: Cargo.lock is committed for reproducible builds (this is an application, not a library)
+
+# Build artifacts
+/build/
+*.bin
+*.hex
+*.elf
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+MANIFEST
+
+# Virtual environments
+.env
+.venv
+env/
+venv/
+ENV/
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Keys and secrets (NEVER commit these)
+*.pem
+*.key
+*_private.json
+*_secret.bin
+hardware_secret.bin
+
+# Provisioning output
+provisioning_output/
+provisioning_logs/
+
+# Internal / non-public documents
+*.docx
+Qbitel_EdgeOS_Investor_Pitch*
+Qbitel_EdgeOS_CLAUDE_CODE_SPEC*
+.claude/
+
+# Test artifacts
+*.log
+coverage/
+htmlcov/
+.coverage
+.pytest_cache/
+.mypy_cache/

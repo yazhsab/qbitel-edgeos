@@ -1,0 +1,10 @@
+# Qbitel EdgeOS Rust Toolchain Configuration
+
+[toolchain]
+channel = "stable"
+components = ["rustfmt", "clippy", "llvm-tools-preview"]
+targets = [
+    "thumbv7em-none-eabihf",      # STM32H7 (Cortex-M7F)
+    "thumbv8m.main-none-eabihf",  # STM32U5 (Cortex-M33)
+    "riscv32imac-unknown-none-elf" # RISC-V
+]

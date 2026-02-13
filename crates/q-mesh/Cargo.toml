@@ -1,0 +1,27 @@
+[package]
+name = "q-mesh"
+version.workspace = true
+edition.workspace = true
+authors.workspace = true
+license.workspace = true
+repository.workspace = true
+description = "Q-MESH - Offline-first secure mesh networking for Qbitel EdgeOS"
+
+[lib]
+crate-type = ["rlib"]
+
+[features]
+default = []
+std = []
+lora = []
+wifi = []
+ble = []
+
+[dependencies]
+q-common = { workspace = true }
+q-crypto = { workspace = true }
+q-identity = { workspace = true }
+heapless = { workspace = true }
+zeroize = { workspace = true }
+
+[dev-dependencies]

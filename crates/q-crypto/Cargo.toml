@@ -1,0 +1,71 @@
+[package]
+name = "q-crypto"
+version.workspace = true
+edition.workspace = true
+authors.workspace = true
+license.workspace = true
+repository.workspace = true
+description = "Cryptographic Agility Layer for Qbitel EdgeOS - Post-Quantum Cryptography"
+
+[lib]
+crate-type = ["rlib"]
+
+[features]
+default = ["kyber768", "dilithium3", "sha3", "aes-gcm-crypto"]
+std = []
+
+# KEM algorithms
+kyber512 = []
+kyber768 = []
+kyber1024 = []
+
+# Signature algorithms
+dilithium2 = []
+dilithium3 = []
+dilithium5 = []
+falcon512 = []
+falcon1024 = []
+
+# Classical algorithms (for hybrid mode)
+classical = ["x25519", "ed25519"]
+x25519 = []
+ed25519 = []
+ecdsa-p256 = []
+
+# Hybrid mode
+hybrid = ["classical"]
+
+# Hash functions
+sha3 = []
+
+# AEAD
+aes-gcm-crypto = []
+chacha20 = []
+
+# Hardware acceleration
+hw-accel = []
+
+# Testing features
+test-vectors = []
+
+[dependencies]
+q-common = { workspace = true }
+zeroize = { workspace = true }
+sha3 = { workspace = true }
+aes-gcm = { workspace = true }
+chacha20poly1305 = { workspace = true }
+subtle = { workspace = true }
+heapless = { workspace = true }
+cfg-if = { workspace = true }
+static_assertions = { workspace = true }
+fn-dsa = { workspace = true }
+rand_core = { workspace = true }
+
+[dev-dependencies]
+rand = { workspace = true }
+hex-literal = "0.4"
+
+# Benchmarks disabled until criterion is added
+# [[bench]]
+# name = "crypto_bench"
+# harness = false

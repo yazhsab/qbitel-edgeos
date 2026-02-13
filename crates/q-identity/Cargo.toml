@@ -1,0 +1,25 @@
+[package]
+name = "q-identity"
+version.workspace = true
+edition.workspace = true
+authors.workspace = true
+license.workspace = true
+repository.workspace = true
+description = "Q-Identity Kernel - PQC-native device identity for Qbitel EdgeOS"
+
+[lib]
+crate-type = ["rlib"]
+
+[features]
+default = []
+std = []
+zeroize = []
+
+[dependencies]
+q-common = { workspace = true }
+q-crypto = { workspace = true }
+q-hal = { workspace = true }
+zeroize = { workspace = true }
+heapless = { workspace = true }
+
+[dev-dependencies]

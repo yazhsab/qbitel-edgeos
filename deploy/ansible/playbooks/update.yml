@@ -1,0 +1,123 @@
+---
+# Qbitel EdgeOS - Firmware Update Playbook
+# Manages OTA firmware updates for device fleets
+
+- name: Deploy firmware updates to Qbitel EdgeOS fleet
+  hosts: localhost
+  become: false
+  gather_facts: true
+
+  vars:
+    firmware_dir: "/var/qbitel/firmware"
+    signing_key_dir: "/var/qbitel/keys/signing"
+    update_staging_dir: "/var/qbitel/staging"
+    fleet_api_endpoint: "{{ lookup('env', 'QBITEL_FLEET_API') }}"
+
+  tasks:
+    - name: Ensure staging directory exists
+      ansible.builtin.file:
+        path: "{{ update_staging_dir }}"
+        state: directory
+        mode: "0750"
+
+    - name: Install q-sign tool
+      ansible.builtin.pip:
+        name: q-sign
+        state: present
+        virtualenv: /opt/qbitel/venv
+        virtualenv_python: python3.10
+
+    - name: Copy firmware image to staging
+      ansible.builtin.copy:
+        src: "{{ firmware_source }}"
+        dest: "{{ update_staging_dir }}/firmware.bin"
+        mode: "0640"
+      when: firmware_source is defined
+
+    - name: Sign firmware image
+      ansible.builtin.command:
+        cmd: >
+          /opt/qbitel/venv/bin/q-sign sign
+          --algorithm dilithium3
+          --key {{ signing_key_dir }}/firmware_signer
+          --image {{ update_staging_dir }}/firmware.bin
+          --image-type {{ image_type | default('kernel') }}
+          --version {{ firmware_version }}
+          --rollback-version {{ rollback_version | default(1) }}
+          --hardware-version {{ hardware_version | default('1.0') }}
+          --output {{ update_staging_dir }}/firmware_signed.bin
+      register: sign_result
+
+    - name: Verify signed firmware
+      ansible.builtin.command:
+        cmd: >
+          /opt/qbitel/venv/bin/q-sign verify
+          --key {{ signing_key_dir }}/firmware_signer
+          --image {{ update_staging_dir }}/firmware_signed.bin
+      register: verify_result
+      failed_when: verify_result.rc != 0
+
+    - name: Create update package
+      ansible.builtin.command:
+        cmd: >
+          /opt/qbitel/venv/bin/q-sign package
+          --key {{ signing_key_dir }}/firmware_signer
+          --platform {{ target_platform }}
+          --kernel {{ update_staging_dir }}/firmware_signed.bin
+          --version {{ package_version }}
+          --output {{ update_staging_dir }}/update_package.qpkg
+      register: package_result
+      when: create_package | default(false)
+
+    - name: Upload firmware to S3
+      amazon.aws.s3_object:
+        bucket: "{{ firmware_bucket }}"
+        object: "firmware/{{ target_platform }}/{{ firmware_version }}/firmware_signed.bin"
+        src: "{{ update_staging_dir }}/firmware_signed.bin"
+        mode: put
+        encryption: AES256
+      when: upload_to_s3 | default(false)
+
+    - name: Trigger fleet update via API
+      ansible.builtin.uri:
+        url: "{{ fleet_api_endpoint }}/updates"
+        method: POST
+        body_format: json
+        body:
+          fleet_id: "{{ fleet_id }}"
+          firmware_version: "{{ firmware_version }}"
+          target_platform: "{{ target_platform }}"
+          rollout_strategy: "{{ rollout_strategy | default('canary') }}"
+          canary_percentage: "{{ canary_percentage | default(5) }}"
+        headers:
+          Authorization: "Bearer {{ lookup('env', 'QBITEL_API_TOKEN') }}"
+        status_code: [200, 201, 202]
+      register: update_trigger
+      when: trigger_update | default(false)
+
+    - name: Monitor update progress
+      ansible.builtin.uri:
+        url: "{{ fleet_api_endpoint }}/updates/{{ update_trigger.json.update_id }}/status"
+        method: GET
+        headers:
+          Authorization: "Bearer {{ lookup('env', 'QBITEL_API_TOKEN') }}"
+      register: update_status
+      until: update_status.json.status in ['completed', 'failed', 'cancelled']
+      retries: 60
+      delay: 30
+      when: monitor_update | default(false) and update_trigger is defined
+
+    - name: Report update results
+      ansible.builtin.debug:
+        msg: |
+          Update Status: {{ update_status.json.status | default('N/A') }}
+          Success Rate: {{ update_status.json.success_rate | default('N/A') }}%
+          Devices Updated: {{ update_status.json.devices_updated | default('N/A') }}
+          Failures: {{ update_status.json.failures | default('N/A') }}
+      when: update_status is defined
+
+    - name: Cleanup staging directory
+      ansible.builtin.file:
+        path: "{{ update_staging_dir }}"
+        state: absent
+      when: cleanup_staging | default(true)
