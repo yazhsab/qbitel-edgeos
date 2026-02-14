@@ -1,4 +1,5 @@
 import { SITE_CONFIG } from '@/lib/constants'
+import Image from 'next/image'
 
 type FooterLink = [string, string]
 
@@ -26,8 +27,16 @@ export default function Footer() {
       <div className="section-wrap py-12">
         <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-4">
           <div>
-            <p className="font-display text-xs uppercase tracking-[0.2em] text-qedge-cyan">Qbitel</p>
-            <h3 className="mt-1 text-2xl font-semibold text-white">EdgeOS</h3>
+            <div className="relative h-14 w-14 overflow-hidden rounded-md border border-white/20 bg-[#0f1d33]">
+              <Image
+                src="/logo-edgeos.png"
+                alt="Qbitel EdgeOS logo"
+                fill
+                sizes="56px"
+                className="object-contain p-1.5"
+              />
+            </div>
+            <p className="mt-3 font-display text-xs uppercase tracking-[0.2em] text-qedge-cyan">Qbitel EdgeOS</p>
             <p className="text-muted mt-3 text-sm leading-relaxed">{SITE_CONFIG.tagline}</p>
             <div className="mt-4 flex flex-wrap gap-2">
               <span className="tech-chip">v{SITE_CONFIG.version}</span>

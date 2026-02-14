@@ -1,5 +1,6 @@
 'use client'
 
+import Image from 'next/image'
 import { useState } from 'react'
 import { NAV_LINKS, SITE_CONFIG } from '@/lib/constants'
 
@@ -11,9 +12,15 @@ export default function Header() {
       <div className="section-wrap">
         <div className="flex h-16 items-center justify-between">
           <a href="#" className="group flex items-center gap-3">
-            <div className="relative h-8 w-8 overflow-hidden rounded-md border border-white/20 bg-[#0f1d33]">
-              <div className="absolute inset-1 rounded-sm border border-qedge-cyan/50" />
-              <div className="absolute left-1/2 top-1/2 h-1 w-1 -translate-x-1/2 -translate-y-1/2 rounded-full bg-qedge-amber" />
+            <div className="relative h-10 w-10 overflow-hidden rounded-md border border-white/20 bg-[#0f1d33]">
+              <Image
+                src="/logo-edgeos.png"
+                alt="Qbitel EdgeOS logo"
+                fill
+                sizes="40px"
+                className="object-contain p-1"
+                priority
+              />
             </div>
             <div>
               <p className="font-display text-[0.72rem] uppercase tracking-[0.2em] text-qedge-cyan">Qbitel</p>
