@@ -1,66 +1,40 @@
 import type { Metadata } from 'next'
-import { Inter, JetBrains_Mono, Orbitron } from 'next/font/google'
 import './globals.css'
 
-const inter = Inter({
-  subsets: ['latin'],
-  variable: '--font-inter',
-})
-
-const jetbrainsMono = JetBrains_Mono({
-  subsets: ['latin'],
-  variable: '--font-jetbrains',
-})
-
-const orbitron = Orbitron({
-  subsets: ['latin'],
-  variable: '--font-orbitron',
-})
-
 export const metadata: Metadata = {
-  title: 'Qbitel EdgeOS — Post-Quantum Secure OS for Edge Devices',
+  title: 'Qbitel EdgeOS | Post-Quantum Critical Infrastructure Runtime',
   description:
-    'Open-source embedded operating system with NIST-standardized post-quantum cryptography, hardware-rooted identity, secure boot, and mesh networking. Written in Rust. Designed for critical infrastructure.',
+    'Qbitel EdgeOS is a Rust-based, post-quantum secure operating system with hardware-rooted identity, certificate-less trust, and deterministic edge performance.',
   keywords: [
+    'Qbitel EdgeOS',
     'post-quantum cryptography',
-    'embedded OS',
-    'Rust',
-    'no_std',
-    'edge computing',
-    'ML-KEM',
-    'ML-DSA',
-    'IoT security',
-    'critical infrastructure',
-    'mesh networking',
-    'secure boot',
-    'STM32',
-    'RISC-V',
+    'ML-KEM-768',
+    'ML-DSA-65',
+    'critical infrastructure security',
+    'hardware-rooted identity',
+    'Rust embedded OS',
   ],
   authors: [{ name: 'Qbitel Inc.' }],
   openGraph: {
-    title: 'Qbitel EdgeOS — Post-Quantum Secure OS for Edge Devices',
+    title: 'Qbitel EdgeOS | Post-Quantum Critical Infrastructure Runtime',
     description:
-      'NIST-standardized PQC. Hardware-rooted identity. Secure boot. Mesh networking. Written in Rust.',
+      'Built for energy, rail, utilities, and defense systems requiring deterministic performance and cryptographic agility.',
     url: 'https://yazhsab.github.io/qbitel-edgeos',
     siteName: 'Qbitel EdgeOS',
     type: 'website',
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'Qbitel EdgeOS — Post-Quantum Secure OS for Edge Devices',
+    title: 'Qbitel EdgeOS | Post-Quantum Critical Infrastructure Runtime',
     description:
-      'NIST-standardized PQC. Hardware-rooted identity. Secure boot. Mesh networking. Written in Rust.',
+      'Rust no-heap architecture, native PQC, and hardware-bound identity for long-lifecycle edge systems.',
   },
 }
 
-export default function RootLayout({
-  children,
-}: {
-  children: React.ReactNode
-}) {
+export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en" className={`${inter.variable} ${jetbrainsMono.variable} ${orbitron.variable}`}>
-      <body className={`${inter.className} antialiased`}>{children}</body>
+    <html lang="en">
+      <body className="antialiased">{children}</body>
     </html>
   )
 }

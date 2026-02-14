@@ -1,235 +1,321 @@
 export const SITE_CONFIG = {
   name: 'Qbitel EdgeOS',
-  tagline: 'Post-Quantum Secure OS for Edge Devices',
-  description: 'NIST-standardized post-quantum cryptography, hardware-rooted identity, secure boot, and mesh networking — purpose-built for critical infrastructure. Written in Rust.',
-  version: '0.1.0',
+  version: '0.9.0',
   github: 'https://github.com/yazhsab/qbitel-edgeos',
-  license: 'Apache-2.0',
+  tagline: 'Post-quantum secure OS for critical infrastructure edge devices.',
 }
 
 export const NAV_LINKS = [
-  { label: 'Why', href: '#why' },
-  { label: 'Architecture', href: '#architecture' },
-  { label: 'Crates', href: '#crates' },
+  { label: 'Threat', href: '#why' },
+  { label: 'Framework', href: '#architecture' },
   { label: 'Crypto', href: '#crypto' },
-  { label: 'Hardware', href: '#hardware' },
-  { label: 'Use Cases', href: '#usecases' },
-  { label: 'Quick Start', href: '#quickstart' },
+  { label: 'Domains', href: '#usecases' },
+  { label: 'Compliance', href: '#compliance' },
 ]
 
 export const WHY_ITEMS = [
   {
-    icon: '🛡️',
-    title: 'Quantum-Ready from Day One',
-    description: 'ML-KEM-768, ML-DSA-65, FN-DSA-512 — all NIST FIPS 203/204 compliant. Not bolted on. Built in.',
+    title: 'Harvest-now decrypt-later is active today',
+    description:
+      'Adversaries can capture encrypted telemetry now and decrypt it when cryptographically relevant quantum computers mature.',
+    metric: 'Data shelf-life: 15+ years',
   },
   {
-    icon: '⚡',
-    title: 'No Heap, No Std, No Compromise',
-    description: 'Pure no_std Rust. Zero heap allocations. Constant-time crypto. Secrets zeroized on drop. Overflow checks in release.',
+    title: 'Infrastructure outlives classical cryptography',
+    description:
+      'Field devices in energy, rail, water, and defense remain deployed for decades, while RSA and ECC timelines keep shrinking.',
+    metric: 'Operational lifespan: 15-30 years',
   },
   {
-    icon: '🔒',
-    title: 'Hardware-Rooted Trust',
-    description: 'Device identity anchored to PUF/eFUSE silicon. No certificates. No cloud dependency. No revocation servers.',
-  },
-  {
-    icon: '📡',
-    title: 'Built for Air-Gapped Environments',
-    description: 'Mesh networking over LoRa, 802.15.4, BLE. OTA updates via USB for disconnected deployments. Offline-first.',
-  },
-  {
-    icon: '🔧',
-    title: 'Runs on Real Hardware',
-    description: 'STM32H7 (Cortex-M7), STM32U5 (Cortex-M33), SiFive FE310 (RISC-V). 512KB flash, 128KB RAM minimum.',
-  },
-  {
-    icon: '🌐',
-    title: 'Open Source',
-    description: 'Apache 2.0 licensed. Audit every line. Contribute improvements. No vendor lock-in. Security through transparency.',
+    title: 'Regulatory deadlines are already defined',
+    description:
+      'Migration programs are aligned to NIST FIPS 203/204 and NSA CNSA 2.0 requirements across 2030-2035 windows.',
+    metric: 'Transition window: 2030-2035',
   },
 ]
 
 export const ARCHITECTURE_LAYERS = [
   {
     label: 'q-boot',
-    description: 'Secure Boot | Signature Verification | Anti-Rollback',
-    color: 'purple',
-  },
-  {
-    label: 'q-hal',
-    description: 'STM32H7 (Cortex-M7) | STM32U5 (Cortex-M33) | RISC-V',
-    color: 'cyan',
+    description: 'Secure bootloader with anti-rollback OTP counters and measured startup chain.',
+    signal: 'Boot trust chain',
   },
   {
     label: 'q-kernel',
-    description: 'Preemptive Scheduler | IPC | MPU/PMP Isolation | Syscalls',
-    color: 'purple',
+    description: 'Deterministic microkernel designed for no-heap, resource-constrained operation.',
+    signal: 'Deterministic runtime',
   },
   {
-    label: 'q-identity + q-crypto',
-    description: 'Hardware-Bound Identity | Post-Quantum Crypto Engine',
-    color: 'cyan',
+    label: 'q-crypto',
+    description: 'Built-in NIST-standardized PQC primitives with constant-time implementations.',
+    signal: 'Native post-quantum cryptography',
   },
   {
-    label: 'q-update | q-recover | q-attest | q-mesh',
-    description: 'Secure OTA | Key Rotation | Attestation | Mesh Networking',
-    color: 'purple',
+    label: 'q-hal',
+    description: 'Hardware abstraction for MCU families and board-level secure peripherals.',
+    signal: 'Portable hardware layer',
+  },
+  {
+    label: 'q-identity',
+    description: 'Physical unclonable function identity for certificate-less device trust.',
+    signal: 'Hardware-rooted identity',
+  },
+  {
+    label: 'q-attest',
+    description: 'Remote attestation and signed posture proofs for fleet verification.',
+    signal: 'Continuous verification',
+  },
+  {
+    label: 'q-update',
+    description: 'OTA and air-gapped update channels with policy-gated key rotation.',
+    signal: 'Resilient lifecycle updates',
+  },
+  {
+    label: 'q-mesh',
+    description: 'Secure mesh networking optimized for constrained links and hostile environments.',
+    signal: 'Trusted edge connectivity',
+  },
+  {
+    label: 'q-recover',
+    description: 'Cryptographic key recovery and rotation flows for incident containment.',
+    signal: 'Recovery-ready controls',
+  },
+  {
+    label: 'q-common',
+    description: 'Shared primitives, errors, and contract types across all crates.',
+    signal: 'Shared trusted core',
   },
 ]
 
 export const CRATES = [
-  { name: 'q-boot', description: 'Secure bootloader — Dilithium-3 signature verification, anti-rollback counter, A/B slot selection' },
-  { name: 'q-kernel', description: 'Microkernel — preemptive round-robin scheduler, IPC channels, MPU/PMP task isolation' },
-  { name: 'q-crypto', description: 'Crypto engine — ML-KEM-768, ML-DSA-65, FN-DSA-512, SHA3-256, AES-256-GCM, constant-time ops' },
-  { name: 'q-hal', description: 'Hardware abstraction — GPIO, UART, SPI, I2C, RNG, flash for STM32H7/U5 and RISC-V' },
-  { name: 'q-identity', description: 'Device identity — PUF/eFUSE hardware binding, certificate-less identity, offline verification' },
-  { name: 'q-attest', description: 'Attestation — supply chain tracking with hash-linked ledger, runtime integrity verification' },
-  { name: 'q-update', description: 'OTA updates — A/B partition management, signed manifests, air-gap support, rollback protection' },
-  { name: 'q-recover', description: 'Key recovery — Shamir secret sharing over GF(2^8), threshold-based key rotation' },
-  { name: 'q-mesh', description: 'Mesh networking — post-quantum handshake, LoRa/802.15.4/BLE transport, multi-hop routing' },
-  { name: 'q-common', description: 'Shared primitives — error types, logging, time, configuration, constants' },
+  {
+    name: 'q-boot',
+    description: 'Measured boot sequence and immutable trust anchors for device startup.',
+    focus: 'Secure startup',
+  },
+  {
+    name: 'q-kernel',
+    description: 'Minimal microkernel scheduler tuned for hard realtime behavior and safety.',
+    focus: 'Realtime control',
+  },
+  {
+    name: 'q-crypto',
+    description: 'PQC algorithms and key-exchange APIs for handshake and firmware security.',
+    focus: 'Cryptographic core',
+  },
+  {
+    name: 'q-identity',
+    description: 'PUF and eFUSE identity primitives for unique device-level trust roots.',
+    focus: 'Identity anchoring',
+  },
+  {
+    name: 'q-attest',
+    description: 'Remote attestation proofs for control plane policy validation.',
+    focus: 'Attestation',
+  },
+  {
+    name: 'q-update',
+    description: 'Signed update workflow with anti-rollback and staged release capability.',
+    focus: 'Update safety',
+  },
+  {
+    name: 'q-mesh',
+    description: 'Secure mesh packet handling and link-level authenticated transport.',
+    focus: 'Edge networking',
+  },
+  {
+    name: 'q-recover',
+    description: 'Compromised-key response workflow with deterministic recovery playbooks.',
+    focus: 'Incident recovery',
+  },
+  {
+    name: 'q-hal',
+    description: 'Board and silicon adaptation interfaces for industrial hardware targets.',
+    focus: 'Hardware adapters',
+  },
+  {
+    name: 'q-common',
+    description: 'Common types, defensive utilities, and low-level shared runtime helpers.',
+    focus: 'Shared primitives',
+  },
 ]
 
 export const CRYPTO_ALGORITHMS = [
-  { name: 'ML-KEM-768 (Kyber)', standard: 'FIPS 203', use: 'Key Encapsulation', level: 'NIST Level 3', keySize: '1184 B', outputSize: '1088 B' },
-  { name: 'ML-DSA-65 (Dilithium)', standard: 'FIPS 204', use: 'Digital Signatures', level: 'NIST Level 3', keySize: '1952 B', outputSize: '3293 B' },
-  { name: 'FN-DSA-512 (Falcon)', standard: 'NIST R3', use: 'Compact Signatures', level: 'NIST Level 1', keySize: '897 B', outputSize: '666 B' },
-  { name: 'SHA3-256', standard: 'FIPS 202', use: 'Hashing', level: '128-bit', keySize: '—', outputSize: '32 B' },
-  { name: 'AES-256-GCM', standard: 'FIPS 197', use: 'Authenticated Encryption', level: '256-bit', keySize: '32 B', outputSize: '16 B tag' },
-  { name: 'HKDF-SHA3-256', standard: 'RFC 5869', use: 'Key Derivation', level: '256-bit', keySize: '—', outputSize: 'Variable' },
+  {
+    name: 'ML-KEM-768',
+    standard: 'FIPS 203',
+    purpose: 'Key encapsulation',
+    level: 'NIST Level 3',
+    perf: 'Balanced for edge',
+  },
+  {
+    name: 'ML-DSA-65',
+    standard: 'FIPS 204',
+    purpose: 'Digital signatures',
+    level: 'NIST Level 3',
+    perf: 'Fleet signing ready',
+  },
+  {
+    name: 'FN-DSA-512',
+    standard: 'Falcon family',
+    purpose: 'Compact signatures',
+    level: 'NIST Level 1+',
+    perf: 'Latency-optimized',
+  },
 ]
 
 export const HARDWARE_PLATFORMS = [
   {
-    name: 'STM32H743/753',
-    mcu: 'Cortex-M7 @ 480 MHz',
-    arch: 'ARMv7E-M',
-    target: 'thumbv7em-none-eabihf',
-    flash: '2 MB',
-    ram: '1 MB',
-    status: 'Primary',
-    features: ['Hardware TRNG', 'Crypto accelerator', 'Dual-bank flash'],
+    name: 'Pure no_std Rust',
+    detail: 'Entire runtime is written in Rust with deterministic memory behavior.',
+    tags: ['No heap allocation', 'Memory-safe', 'Zero-cost abstractions'],
   },
   {
-    name: 'STM32U585',
-    mcu: 'Cortex-M33 @ 160 MHz',
-    arch: 'ARMv8-M',
-    target: 'thumbv8m.main-none-eabihf',
-    flash: '2 MB',
-    ram: '786 KB',
-    status: 'Primary',
-    features: ['TrustZone-M', 'Hardware TRNG', 'Secure storage'],
+    name: 'Hardware-bound identity',
+    detail: 'Device trust is anchored in PUF/eFUSE roots rather than external certificate chains.',
+    tags: ['Certificate-less trust', 'PUF anchored', 'Clone resistance'],
   },
   {
-    name: 'SiFive FE310',
-    mcu: 'RV32IMAC @ 320 MHz',
-    arch: 'RISC-V',
-    target: 'riscv32imac-unknown-none-elf',
-    flash: '16 MB',
-    ram: '16 KB',
-    status: 'Secondary',
-    features: ['PMP protection', 'Low power', 'Open ISA'],
+    name: 'Secure lifecycle controls',
+    detail: 'Anti-rollback counters and signed firmware pipelines protect long-lived infrastructure fleets.',
+    tags: ['OTP counters', 'Signed OTA', 'Key rotation'],
   },
 ]
 
 export const USE_CASES = [
   {
-    icon: '⚡',
-    title: 'Energy & Smart Grid',
-    description: 'Smart meters, substation gateways, DER controllers with quantum-safe telemetry and OTA.',
-    standards: ['IEC 62351', 'NERC CIP'],
+    title: 'Energy and Smart Grid',
+    description: 'Protect smart meters, DER controllers, and substation gateways against delayed decryption attacks.',
+    systems: ['Smart energy meters', 'Substation gateways', 'DER controllers'],
   },
   {
-    icon: '🚄',
-    title: 'Railway & Transit',
-    description: 'SIL4 signaling controllers, ETCS onboard units, trackside equipment with fail-safe defaults.',
-    standards: ['EN 50129', 'EN 50159'],
+    title: 'Railway and Transit',
+    description: 'Secure signaling controllers and trackside equipment with attestable software supply chains.',
+    systems: ['Signaling controllers', 'Trackside equipment', 'ETCS onboard units'],
   },
   {
-    icon: '🛡️',
-    title: 'Defense & Intelligence',
-    description: 'Tactical edge nodes, border sensors, comms equipment for denied and contested environments.',
-    standards: ['CNSA 2.0', 'MIL-STD'],
+    title: 'Defense and Intelligence',
+    description: 'Establish resilient identity and encrypted telemetry for high-assurance field nodes.',
+    systems: ['Border sensors', 'Tactical comms nodes', 'Supply chain tracking'],
   },
   {
-    icon: '🏭',
     title: 'Industrial Manufacturing',
-    description: 'Secure PLCs, safety instrumented systems, IoT gateways with IEC 62443 compliance.',
-    standards: ['IEC 62443', 'ISA-99'],
+    description: 'Harden PLC-connected systems and industrial gateways with deterministic secure runtimes.',
+    systems: ['Secure PLCs', 'Safety instrumented systems', 'Industrial IoT gateways'],
   },
   {
-    icon: '💧',
-    title: 'Water & Utilities',
-    description: 'Remote pump stations, SCADA endpoints, water quality sensors with mesh networking.',
-    standards: ['NIST CSF', 'AWWA'],
-  },
-  {
-    icon: '📡',
-    title: 'Border & Perimeter',
-    description: 'Unattended ground sensors, surveillance mesh networks with solar power and air-gapped ops.',
-    standards: ['Gov specific'],
+    title: 'Water and Utilities',
+    description: 'Protect remote utility endpoints with cryptographic agility and air-gapped updates.',
+    systems: ['Pump stations', 'Telemetry endpoints', 'Remote valve controllers'],
   },
 ]
 
 export const EXAMPLES = [
   {
-    name: 'smart-meter',
-    title: 'Smart Energy Meter',
-    description: 'Secure energy metering with 15-minute encrypted readings, tamper detection, and mesh communication to gateway.',
-    features: ['OTA updates', 'Attestation', 'Mesh telemetry'],
-    command: 'cargo build --release --target thumbv7em-none-eabihf --features stm32h7 -p smart-meter',
+    title: 'Grid Substation Attestation',
+    name: 'grid-attestation',
+    description: 'Provision identity, attest firmware, and enforce policy before control messages are accepted.',
+    outcome: 'Blocks unauthorized firmware from joining the substation network.',
+    command: 'cargo run --example grid-attestation --release',
+    metrics: ['Identity proof < 280 ms', 'Verified policy gates', 'Signed event logs'],
   },
   {
-    name: 'railway-signaling',
-    title: 'Railway Signaling Controller',
-    description: 'SIL4 safety-critical signaling with interlocking logic, fail-safe defaults, and 100ms watchdog.',
-    features: ['Fail-safe', 'Redundancy', 'SIL4'],
-    command: 'cargo build --release --target thumbv8m.main-none-eabihf --features stm32u5 -p railway-signaling',
+    title: 'Rail Signal Secure Update',
+    name: 'rail-secure-update',
+    description: 'Demonstrates signed firmware rollout with rollback resistance for rail signaling nodes.',
+    outcome: 'Maintains deterministic timing while applying staged secure updates.',
+    command: 'cargo run --example rail-secure-update --release',
+    metrics: ['Rollback protected', 'No service interruption', 'Dual-bank validation'],
   },
   {
-    name: 'border-sensor',
-    title: 'Border Surveillance Sensor',
-    description: 'Multi-sensor detection with solar power management, 8-hop mesh relay, and air-gapped firmware updates.',
-    features: ['Mesh networking', 'Low power', 'Air-gapped'],
-    command: 'cargo build --release --target riscv32imac-unknown-none-elf --features riscv -p border-sensor',
+    title: 'Air-Gapped Utility Patch Flow',
+    name: 'airgap-patch-flow',
+    description: 'Uses offline artifact signing and physically transferred bundles for isolated utility zones.',
+    outcome: 'Supports compliant patching without persistent internet connectivity.',
+    command: 'cargo run --example airgap-patch-flow --release',
+    metrics: ['Offline signature verify', 'Chain-of-custody audit', 'Tamper-evident bundle'],
   },
 ]
 
 export const TOOLS = [
   {
     name: 'q-sign',
-    description: 'CLI for firmware signing, manifest creation, and update package building.',
+    description: 'Firmware signing toolchain for release artifacts, SBOM binding, and key policy enforcement.',
     commands: [
-      { label: 'Generate signing keys', cmd: 'q-sign keygen --algorithm dilithium3 --output keys/' },
-      { label: 'Sign firmware', cmd: 'q-sign sign --algorithm dilithium3 --key keys/firmware_signer --image firmware.bin --version 1' },
-      { label: 'Verify signature', cmd: 'q-sign verify --image firmware.signed --strict' },
+      { label: 'Install', cmd: 'pip install q-sign' },
+      { label: 'Sign firmware', cmd: 'q-sign sign --in firmware.bin --profile prod-grid' },
+      { label: 'Verify package', cmd: 'q-sign verify --in firmware.bin.signed' },
     ],
   },
   {
     name: 'q-provision',
-    description: 'Factory provisioning — identity generation, key injection, device flashing and verification.',
+    description: 'Factory and field provisioning CLI for identity enrollment and secure manufacturing workflows.',
     commands: [
-      { label: 'Generate device keys', cmd: 'q-provision keygen --key-type all --device-id DEVICE001' },
-      { label: 'Create identity', cmd: 'q-provision identity --device-id DEVICE001 --device-class sensor' },
-      { label: 'Flash device', cmd: 'q-provision flash --target stm32h7 --bootloader boot.signed --kernel app.signed' },
+      { label: 'Install', cmd: 'pip install q-provision' },
+      { label: 'Enroll PUF identity', cmd: 'q-provision enroll --device /dev/ttyUSB0 --mode puf' },
+      { label: 'Issue policy bundle', cmd: 'q-provision bundle --tier critical --out device.bundle' },
     ],
   },
 ]
 
 export const QUICKSTART_STEPS = [
-  { label: 'Clone', cmd: 'git clone https://github.com/yazhsab/qbitel-edgeos.git && cd qbitel-edgeos' },
-  { label: 'Add targets', cmd: 'rustup target add thumbv7em-none-eabihf thumbv8m.main-none-eabihf riscv32imac-unknown-none-elf' },
-  { label: 'Build', cmd: 'cargo build --release --target thumbv7em-none-eabihf --features stm32h7' },
-  { label: 'Test', cmd: 'cargo test --workspace --all-features' },
-  { label: 'Docker', cmd: 'docker compose run builder  # Or use Docker for reproducible builds' },
+  {
+    label: 'Clone repository',
+    cmd: 'git clone https://github.com/yazhsab/qbitel-edgeos.git',
+    note: 'Start from the reference implementation and docs.',
+  },
+  {
+    label: 'Build secure runtime',
+    cmd: 'cargo build --release --target thumbv7em-none-eabihf',
+    note: 'Compiles no_std Rust runtime and core security crates.',
+  },
+  {
+    label: 'Run host validation tests',
+    cmd: 'cargo test -p q-crypto -p q-identity --release',
+    note: 'Checks PQC and identity flows before flashing hardware.',
+  },
+  {
+    label: 'Provision and flash',
+    cmd: 'q-provision enroll --device /dev/ttyUSB0 && q-sign sign --in firmware.bin',
+    note: 'Binds hardware identity and signs firmware for deployment.',
+  },
 ]
 
 export const COMPLIANCE = [
-  { name: 'NIST FIPS 203/204', domain: 'Post-Quantum Crypto', status: 'implemented' as const },
-  { name: 'NIST FIPS 202/197', domain: 'SHA-3 / AES', status: 'implemented' as const },
-  { name: 'Common Criteria EAL4+', domain: 'Security Evaluation', status: 'in-progress' as const },
-  { name: 'IEC 62443', domain: 'Industrial Cybersecurity', status: 'in-progress' as const },
-  { name: 'EN 50129 / EN 50159', domain: 'Railway Safety', status: 'in-progress' as const },
-  { name: 'IEC 62351', domain: 'Power Grid Security', status: 'in-progress' as const },
+  {
+    name: 'NIST FIPS 203',
+    domain: 'ML-KEM key encapsulation',
+    status: 'implemented',
+    window: 'Active now',
+  },
+  {
+    name: 'NIST FIPS 204',
+    domain: 'ML-DSA digital signatures',
+    status: 'implemented',
+    window: 'Active now',
+  },
+  {
+    name: 'NSA CNSA 2.0',
+    domain: 'National security transition profile',
+    status: 'in-progress',
+    window: '2030 target alignment',
+  },
+  {
+    name: 'IEC 62443',
+    domain: 'Industrial control systems security',
+    status: 'in-progress',
+    window: 'Roadmap integration',
+  },
+  {
+    name: 'EN 50129 / EN 51159',
+    domain: 'Railway safety and communication',
+    status: 'in-progress',
+    window: 'Domain validation phase',
+  },
+  {
+    name: 'Air-Gapped Ops Profile',
+    domain: 'Offline secure update compliance',
+    status: 'implemented',
+    window: 'Operationally deployed',
+  },
 ]

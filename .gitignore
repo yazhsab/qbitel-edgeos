@@ -73,3 +73,8 @@ htmlcov/
 .coverage
 .pytest_cache/
 .mypy_cache/
+
+# Website build artifacts
+website/node_modules/
+website/.next/
+website/out/

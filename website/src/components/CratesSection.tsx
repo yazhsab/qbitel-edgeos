@@ -2,35 +2,29 @@ import { CRATES, SITE_CONFIG } from '@/lib/constants'
 
 export default function CratesSection() {
   return (
-    <section id="crates" className="py-24 relative bg-cyber-surface/30">
-      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-        <div className="text-center mb-16">
-          <h2 className="font-display text-3xl sm:text-4xl font-bold tracking-tight">
-            <span className="gradient-text">10 Modular Crates</span>
-          </h2>
-          <p className="mt-4 text-gray-400 max-w-2xl mx-auto">
-            Each crate is independently compilable, testable, and auditable. Use what you need.
+    <section id="crates" className="py-16 sm:py-20">
+      <div className="section-wrap">
+        <div className="mb-10 max-w-3xl">
+          <span className="eyebrow">Core Components</span>
+          <h2 className="mt-4 text-3xl font-semibold text-white sm:text-4xl">10 crates, one security operating model.</h2>
+          <p className="text-muted mt-4 text-base leading-relaxed">
+            Each crate can be inspected, tested, and integrated independently without compromising the full trust model.
           </p>
         </div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
-          {CRATES.map((crate) => (
+        <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-5">
+          {CRATES.map((crateItem, index) => (
             <a
-              key={crate.name}
-              href={`${SITE_CONFIG.github}/tree/main/crates/${crate.name}`}
+              key={crateItem.name}
+              href={`${SITE_CONFIG.github}/tree/main/crates/${crateItem.name}`}
               target="_blank"
               rel="noopener noreferrer"
-              className="card-cyber group flex flex-col"
+              className="reveal-up group rounded-xl border border-white/10 bg-[#0a1528]/85 p-4 transition-all duration-300 hover:-translate-y-1 hover:border-qedge-cyan/45"
+              style={{ animationDelay: `${80 + index * 40}ms` }}
             >
-              <div className="flex items-center gap-2 mb-3">
-                <span className="text-cyber-cyan font-mono text-xs">$</span>
-                <h3 className="font-mono text-sm font-bold text-white group-hover:text-cyber-cyan transition-colors">
-                  {crate.name}
-                </h3>
-              </div>
-              <p className="text-xs text-gray-500 leading-relaxed flex-1">
-                {crate.description}
-              </p>
+              <p className="font-mono text-sm uppercase tracking-[0.14em] text-qedge-cyan">{crateItem.name}</p>
+              <p className="mt-2 text-sm font-semibold text-white">{crateItem.focus}</p>
+              <p className="text-muted mt-2 text-xs leading-relaxed">{crateItem.description}</p>
             </a>
           ))}
         </div>

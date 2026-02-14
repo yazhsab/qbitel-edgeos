@@ -2,52 +2,39 @@ import { ARCHITECTURE_LAYERS } from '@/lib/constants'
 
 export default function ArchitectureSection() {
   return (
-    <section id="architecture" className="py-24 relative">
-      <div className="mx-auto max-w-4xl px-4 sm:px-6 lg:px-8">
-        <div className="text-center mb-16">
-          <h2 className="font-display text-3xl sm:text-4xl font-bold tracking-tight">
-            <span className="gradient-text">Architecture</span>
-          </h2>
-          <p className="mt-4 text-gray-400 max-w-2xl mx-auto">
-            Layered, modular design. Each layer depends only on layers below it. No circular dependencies.
-          </p>
-        </div>
-
-        <div className="flex flex-col gap-3">
-          {[...ARCHITECTURE_LAYERS].reverse().map((layer, i) => (
-            <div
-              key={i}
-              className={`group relative rounded-lg p-5 border transition-all duration-300 hover:scale-[1.02] ${
-                layer.color === 'cyan'
-                  ? 'border-cyber-cyan/20 bg-cyber-cyan/5 hover:border-cyber-cyan/50 hover:shadow-neon-cyan'
-                  : 'border-cyber-purple/20 bg-cyber-purple/5 hover:border-cyber-purple/50 hover:shadow-neon-purple'
-              }`}
-            >
-              <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
-                <h3 className={`font-mono text-sm font-bold tracking-wide ${
-                  layer.color === 'cyan' ? 'text-cyber-cyan' : 'text-cyber-purple'
-                }`}>
-                  {layer.label}
-                </h3>
-                <p className="text-xs text-gray-500 font-mono">
-                  {layer.description}
-                </p>
-              </div>
-
-              {/* Connector line */}
-              {i < ARCHITECTURE_LAYERS.length - 1 && (
-                <div className="absolute -bottom-3 left-1/2 -translate-x-1/2 w-px h-3 bg-gradient-to-b from-cyber-border to-transparent" />
-              )}
-            </div>
-          ))}
-        </div>
-
-        {/* Bottom label */}
-        <div className="mt-8 text-center">
-          <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full border border-cyber-border bg-cyber-surface/50">
-            <div className="h-2 w-2 rounded-full bg-cyber-cyan/50" />
-            <span className="text-xs font-mono text-gray-500">q-common — shared types, errors, utilities</span>
+    <section id="architecture" className="py-16 sm:py-20">
+      <div className="section-wrap">
+        <div className="mb-10 flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
+          <div className="max-w-3xl">
+            <span className="eyebrow">EdgeOS Framework</span>
+            <h2 className="mt-4 text-3xl font-semibold text-white sm:text-4xl">Layered architecture for auditable trust.</h2>
+            <p className="text-muted mt-4 text-base leading-relaxed">
+              The stack is intentionally modular: cryptography, identity, attestation, recovery, and updates are isolated
+              for independent validation and release control.
+            </p>
           </div>
+          <div className="surface-panel max-w-sm p-4">
+            <p className="font-mono text-xs uppercase tracking-[0.16em] text-qedge-cyan">Design Constraints</p>
+            <p className="mt-2 text-sm text-qedge-ink/90">No heap allocation, deterministic scheduling, hardware-anchored identity.</p>
+          </div>
+        </div>
+
+        <div className="space-y-3">
+          {ARCHITECTURE_LAYERS.map((layer, index) => (
+            <article
+              key={layer.label}
+              className="reveal-up flex flex-col gap-3 rounded-xl border border-white/10 bg-[#0c172b]/80 p-4 sm:flex-row sm:items-center sm:justify-between"
+              style={{ animationDelay: `${100 + index * 65}ms` }}
+            >
+              <div>
+                <p className="font-mono text-sm uppercase tracking-[0.14em] text-qedge-cyan">{layer.label}</p>
+                <p className="mt-1 text-sm text-qedge-ink/85 sm:text-base">{layer.description}</p>
+              </div>
+              <span className="inline-flex rounded-full border border-qedge-amber/40 bg-qedge-amber/10 px-3 py-1 text-xs font-semibold uppercase tracking-[0.1em] text-qedge-amber">
+                {layer.signal}
+              </span>
+            </article>
+          ))}
         </div>
       </div>
     </section>

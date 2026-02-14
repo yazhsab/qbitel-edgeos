@@ -1,59 +1,42 @@
-import { EXAMPLES, SITE_CONFIG } from '@/lib/constants'
+import { EXAMPLES } from '@/lib/constants'
 
 export default function ExamplesSection() {
   return (
-    <section id="examples" className="py-24 relative bg-cyber-surface/30">
-      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-        <div className="text-center mb-16">
-          <h2 className="font-display text-3xl sm:text-4xl font-bold tracking-tight">
-            <span className="gradient-text">Real-World Examples</span>
-          </h2>
-          <p className="mt-4 text-gray-400 max-w-2xl mx-auto">
-            Complete, working applications demonstrating Qbitel EdgeOS in production scenarios.
+    <section id="examples" className="py-16 sm:py-20">
+      <div className="section-wrap">
+        <div className="mb-10 max-w-3xl">
+          <span className="eyebrow">Operational Scenarios</span>
+          <h2 className="mt-4 text-3xl font-semibold text-white sm:text-4xl">Reference implementations for real deployments.</h2>
+          <p className="text-muted mt-4 text-base leading-relaxed">
+            Example pipelines demonstrate how to combine PQC, identity attestation, and secure lifecycle operations under
+            production-like constraints.
           </p>
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          {EXAMPLES.map((example) => (
-            <a
+        <div className="grid gap-5 lg:grid-cols-3">
+          {EXAMPLES.map((example, index) => (
+            <article
               key={example.name}
-              href={`${SITE_CONFIG.github}/tree/main/examples/${example.name}`}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="card-cyber group flex flex-col"
+              className="reveal-up rounded-2xl border border-white/10 bg-[#0b162b]/90 p-5"
+              style={{ animationDelay: `${100 + index * 90}ms` }}
             >
-              <h3 className="text-lg font-semibold text-white mb-2 group-hover:text-cyber-cyan transition-colors">
-                {example.title}
-              </h3>
-              <p className="text-sm text-gray-400 leading-relaxed mb-4 flex-1">
-                {example.description}
-              </p>
+              <p className="font-mono text-xs uppercase tracking-[0.14em] text-qedge-cyan">{example.name}</p>
+              <h3 className="mt-2 text-lg font-semibold text-white">{example.title}</h3>
+              <p className="text-muted mt-3 text-sm leading-relaxed">{example.description}</p>
+              <p className="mt-3 text-sm text-qedge-amber">{example.outcome}</p>
 
-              {/* Feature tags */}
-              <div className="flex flex-wrap gap-2 mb-4">
-                {example.features.map((f) => (
-                  <span key={f} className="px-2 py-0.5 rounded text-xs bg-cyber-cyan/10 text-cyber-cyan border border-cyber-cyan/20">
-                    {f}
+              <div className="terminal-shell mt-4">
+                <p className="text-qedge-muted">$ {example.command}</p>
+              </div>
+
+              <div className="mt-4 flex flex-wrap gap-2">
+                {example.metrics.map((metric) => (
+                  <span key={metric} className="tech-chip">
+                    {metric}
                   </span>
                 ))}
               </div>
-
-              {/* Terminal block */}
-              <div className="terminal-block">
-                <div className="terminal-header">
-                  <div className="terminal-dot bg-cyber-red/80" />
-                  <div className="terminal-dot bg-cyber-yellow/80" />
-                  <div className="terminal-dot bg-cyber-green/80" />
-                  <span className="ml-2 text-xs text-gray-600 font-mono">{example.name}</span>
-                </div>
-                <div className="p-4">
-                  <div className="flex gap-2">
-                    <span className="text-cyber-cyan select-none">$</span>
-                    <code className="text-cyber-green text-xs break-all">{example.command}</code>
-                  </div>
-                </div>
-              </div>
-            </a>
+            </article>
           ))}
         </div>
       </div>
