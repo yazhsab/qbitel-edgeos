@@ -2,7 +2,7 @@
 
 import Image from 'next/image'
 import { useState } from 'react'
-import { NAV_LINKS, SITE_CONFIG } from '@/lib/constants'
+import { NAV_LINKS, SITE_CONFIG, BASE_PATH } from '@/lib/constants'
 
 export default function Header() {
   const [mobileOpen, setMobileOpen] = useState(false)
@@ -14,7 +14,7 @@ export default function Header() {
           <a href="#" className="group flex items-center gap-3">
             <div className="relative h-10 w-10 overflow-hidden rounded-md border border-white/20 bg-[#0f1d33]">
               <Image
-                src="/logo-edgeos.png"
+                src={`${BASE_PATH}/logo-edgeos.png`}
                 alt="Qbitel EdgeOS logo"
                 fill
                 sizes="40px"

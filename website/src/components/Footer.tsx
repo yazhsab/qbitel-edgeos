@@ -1,4 +1,4 @@
-import { SITE_CONFIG } from '@/lib/constants'
+import { SITE_CONFIG, BASE_PATH } from '@/lib/constants'
 import Image from 'next/image'
 
 type FooterLink = [string, string]
@@ -29,7 +29,7 @@ export default function Footer() {
           <div>
             <div className="relative h-14 w-14 overflow-hidden rounded-md border border-white/20 bg-[#0f1d33]">
               <Image
-                src="/logo-edgeos.png"
+                src={`${BASE_PATH}/logo-edgeos.png`}
                 alt="Qbitel EdgeOS logo"
                 fill
                 sizes="56px"

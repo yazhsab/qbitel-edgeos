@@ -1,3 +1,5 @@
+export const BASE_PATH = process.env.NODE_ENV === 'production' ? '/qbitel-edgeos' : ''
+
 export const SITE_CONFIG = {
   name: 'Qbitel EdgeOS',
   version: '0.9.0',

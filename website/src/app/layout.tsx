@@ -1,7 +1,6 @@
 import type { Metadata } from 'next'
+import { BASE_PATH } from '@/lib/constants'
 import './globals.css'
-
-const basePath = process.env.NODE_ENV === 'production' ? '/qbitel-edgeos' : ''
 
 export const metadata: Metadata = {
   title: 'Qbitel EdgeOS | Post-Quantum Critical Infrastructure Runtime',
@@ -18,7 +17,7 @@ export const metadata: Metadata = {
   ],
   authors: [{ name: 'Qbitel Inc.' }],
   icons: {
-    icon: `${basePath}/favicon.ico`,
+    icon: `${BASE_PATH}/favicon.ico`,
   },
   openGraph: {
     title: 'Qbitel EdgeOS | Post-Quantum Critical Infrastructure Runtime',
