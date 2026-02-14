@@ -15,6 +15,9 @@ export const metadata: Metadata = {
     'Rust embedded OS',
   ],
   authors: [{ name: 'Qbitel Inc.' }],
+  icons: {
+    icon: '/favicon.ico',
+  },
   openGraph: {
     title: 'Qbitel EdgeOS | Post-Quantum Critical Infrastructure Runtime',
     description:
